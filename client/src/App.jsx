@@ -6,6 +6,7 @@ function App() {
   const [file, setFile] = useState(null);
  const [copies, setCopies] = useState(1);
   const [message, setMessage] = useState("");
+  const [pages, setPages] = useState(0);
 
   const uploadPdf = async () => {
     if (!file) {
