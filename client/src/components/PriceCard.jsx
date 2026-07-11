@@ -23,10 +23,28 @@ function PriceCard({ pages, copies, color, total }) {
         description: "PDF Printing Payment",
         order_id: order.id,
 
-        handler: function (response) {
-          alert("Payment Successful");
-          console.log(response);
-        },
+       handler: async function (response) {
+  try {
+    const verify = await axios.post(
+      "https://autoprint-hub-server.onrender.com/api/payment/verify",
+      {
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+      }
+    );
+
+    if (verify.data.success) {
+      alert("Payment Verified Successfully");
+    } else {
+      alert("Payment Verification Failed");
+    }
+
+  } catch (error) {
+    console.log(error);
+    alert("Verification Error");
+  }
+},
 
         theme: {
           color: "#2563eb"
