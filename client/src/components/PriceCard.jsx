@@ -24,6 +24,7 @@ function PriceCard({ pages, copies, color, total }) {
         order_id: order.id,
 
        handler: async function (response) {
+       console.log("Razorpay Response:", response);
   try {
     const verify = await axios.post(
       "https://autoprint-hub-server.onrender.com/api/payment/verify",
