@@ -19,7 +19,7 @@ function App() {
 
     try {
       const res = await axios.post(
-      "http://127.0.0.1:5000/api/pdf/info",
+      "https://autoprint-hub-server.onrender.com/api/pdf/info",
         formData,
         {
           headers: {
