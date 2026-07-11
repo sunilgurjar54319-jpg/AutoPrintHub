@@ -1,15 +1,9 @@
 .app {
+  padding: 20px;
   text-align: center;
-  padding: 40px;
-  font-family: Arial;
 }
 
 button {
-  padding: 12px 25px;
-  font-size: 18px;
+  padding: 10px 20px;
   cursor: pointer;
-}
-
-.features {
-  margin-top: 30px;
 }
