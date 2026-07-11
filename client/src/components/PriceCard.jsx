@@ -1,18 +1,20 @@
 function PriceCard({ pages, copies, color, total }) {
+  const rate = color === "bw" ? 2 : 10;
+
   return (
     <div
       style={{
-        background: "#ffffff",
+        background: "#fff",
         padding: "20px",
         borderRadius: "10px",
-        marginBottom: "20px",
+        marginTop: "20px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
       }}
     >
       <h2>💰 Price Details</h2>
 
       <p>
-        Pages: {pages}
+        Total Pages: {pages}
       </p>
 
       <p>
@@ -20,11 +22,11 @@ function PriceCard({ pages, copies, color, total }) {
       </p>
 
       <p>
-        Type: {color === "bw" ? "Black & White" : "Color"}
+        Rate: ₹{rate} / page
       </p>
 
       <h3>
-        Total: ₹{total}
+        Total Amount: ₹{total}
       </h3>
     </div>
   );
