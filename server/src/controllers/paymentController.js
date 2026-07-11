@@ -1,49 +1,72 @@
 const crypto = require("crypto");
 const razorpay = require("../config/razorpay");
-const Order = require("../models/orderModel");
 
+const { databases } = require("../config/appwrite");
+const { ID } = require("node-appwrite");
+
+
+// Create Razorpay Order
 exports.createOrder = async (req, res) => {
   try {
+
     const { amount } = req.body;
 
     const options = {
       amount: amount * 100,
       currency: "INR",
-      receipt: "autoprint_order_" + Date.now(),
+      receipt: "autoprint_order_" + Date.now()
     };
+
 
     const order = await razorpay.orders.create(options);
 
+
     res.json({
       success: true,
-      order,
+      order
     });
+
 
   } catch (error) {
-    console.error(error);
+
+    console.log(error);
 
     res.status(500).json({
-      success: false,
-      message: error.message,
+      success:false,
+      message:error.message
     });
+
   }
 };
 
 
+
+
+// Verify Payment
 exports.verifyPayment = async (req, res) => {
+
   try {
+
 
     const {
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature
+      razorpay_signature,
+
+      pages,
+      copies,
+      color,
+      amount
+
     } = req.body;
+
 
 
     const body =
       razorpay_order_id +
       "|" +
       razorpay_payment_id;
+
 
 
     const expectedSignature =
@@ -56,51 +79,83 @@ exports.verifyPayment = async (req, res) => {
       .digest("hex");
 
 
-    if (expectedSignature === razorpay_signature) {
 
-  const {
-    pages,
-    copies,
-    color,
-    amount
-  } = req.body;
+    if(expectedSignature === razorpay_signature){
 
 
-  const newOrder = await Order.create({
 
-    pages: pages,
-    copies: copies,
-    printType: color,
-    amount: amount,
+      const order =
+      await databases.createDocument(
 
-    paymentId: razorpay_payment_id,
+        process.env.APPWRITE_DATABASE_ID,
 
-    orderStatus: "Paid"
+        process.env.APPWRITE_ORDER_COLLECTION_ID,
 
-  });
+        ID.unique(),
+
+        {
+
+          paymentId: razorpay_payment_id,
+
+          pages: Number(pages),
+
+          copies: Number(copies),
+
+          printType: color,
+
+          amount: Number(amount),
+
+          status: "Paid",
+
+          createdAt:
+          new Date().toISOString()
+
+        }
+
+      );
 
 
-  return res.json({
-    success: true,
-    message: "Payment Verified",
-    order: newOrder
-  });
 
-}
+      return res.json({
+
+        success:true,
+
+        message:"Payment Verified",
+
+        order
+
+      });
+
+
+    }
+
 
 
     res.status(400).json({
-      success: false,
-      message: "Invalid Signature"
+
+      success:false,
+
+      message:"Invalid Signature"
+
     });
 
 
-  } catch (error) {
+
+  } catch(error){
+
+
+    console.log(error);
+
 
     res.status(500).json({
-      success: false,
-      message: error.message
+
+      success:false,
+
+      message:error.message
+
     });
 
+
   }
+
 };
