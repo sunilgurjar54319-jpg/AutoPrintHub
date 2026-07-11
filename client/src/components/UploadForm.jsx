@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-function UploadForm({ setPages }) {
+function UploadForm({ setPages, pages }) {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
 
@@ -53,6 +53,11 @@ function UploadForm({ setPages }) {
       </button>
 
       <p>{message}</p>
+{pages > 0 && (
+  <h3>
+    Total Pages: {pages}
+  </h3>
+)}
     </div>
   );
 }

@@ -16,9 +16,10 @@ function Home() {
     <div>
       <Header />
 
-      <UploadForm 
-        setPages={setPages}
-      />
+     <UploadForm 
+  setPages={setPages}
+  pages={pages}
+/>
 
       <PrintOptions
         color={color}
