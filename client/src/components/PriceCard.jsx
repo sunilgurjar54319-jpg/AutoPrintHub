@@ -28,6 +28,20 @@ function PriceCard({ pages, copies, color, total }) {
       <h3>
         Total Amount: ₹{total}
       </h3>
+      <button
+  style={{
+    marginTop: "15px",
+    padding: "12px 25px",
+    background: "#2563eb",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+  }}
+  onClick={() => alert("Payment Coming Soon")}
+>
+  Pay Now ₹{total}
+</button>
     </div>
   );
 }
