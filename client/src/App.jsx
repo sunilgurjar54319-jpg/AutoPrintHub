@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 
 function App() {
   const [file, setFile] = useState(null);
- const [copies, setCopies] = useState(1);
-  const [message, setMessage] = useState("");
+  const [copies, setCopies] = useState(1);
   const [pages, setPages] = useState(0);
+  const [message, setMessage] = useState("");
+
+  const [color, setColor] = useState("bw");
+  const [pricePerPage, setPricePerPage] = useState(2);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    const rate = color === "bw" ? 2 : 10;
+    setPricePerPage(rate);
+    setTotal(rate * pages * copies);
+  }, [pages, copies, color]);
 
   const uploadPdf = async () => {
     if (!file) {
@@ -19,7 +29,7 @@ function App() {
 
     try {
       const res = await axios.post(
-      "https://autoprint-hub-server.onrender.com/api/pdf/info",
+        "https://autoprint-hub-server.onrender.com/api/pdf/info",
         formData,
         {
           headers: {
@@ -31,51 +41,16 @@ function App() {
       setPages(res.data.pages);
       setMessage("PDF Upload Successful");
     } catch (err) {
-      console.log("Error:", err);
-
-      if (err.response) {
-        console.log("Response:", err.response.data);
-        setMessage(err.response.data.message || "Server Error");
-      } else {
-        setMessage(err.message);
-      }
+      setMessage(err.response?.data?.message || err.message);
     }
   };
 
   return (
     <div className="app">
       <h1>AutoPrint Hub</h1>
-
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-
-      <br />
-      <br />
-
-      <button onClick={uploadPdf}>Upload PDF</button>
-
-      <h2>{message}</h2>
-<div>
-  <br />
-  <label>Copies:</label>
-
-  <input
-    type="number"
-    min="1"
-    value={copies}
-    onChange={(e) => setCopies(e.target.value)}
-  />
-</div>
-      {pages > 0 && (
-        <div>
-          <h3>Total Pages: {pages}</h3>
-        </div>
-      )}
     </div>
   );
 }
 
 export default App;
+
