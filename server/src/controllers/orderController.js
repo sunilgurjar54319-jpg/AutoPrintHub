@@ -1,53 +1,58 @@
-const Order = require("../models/orderModel");
+const { databases } = require("../config/appwrite");
+
 
 // Get All Orders
 exports.getOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
-      .sort({ createdAt: -1 });
+
+    const orders = await databases.listDocuments(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_ORDER_COLLECTION_ID
+    );
 
     res.json({
       success: true,
-      orders
+      orders: orders.documents
     });
+
 
   } catch (error) {
 
     res.status(500).json({
-      success: false,
-      message: error.message
+      success:false,
+      message:error.message
     });
 
   }
 };
 
 
+
 // Get Single Order
 exports.getOrderById = async (req, res) => {
+
   try {
 
-    const order = await Order.findById(
+    const order = await databases.getDocument(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
       req.params.id
     );
 
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found"
-      });
-    }
 
     res.json({
-      success: true,
+      success:true,
       order
     });
 
-  } catch (error) {
+
+  } catch(error){
 
     res.status(500).json({
-      success: false,
-      message: error.message
+      success:false,
+      message:error.message
     });
 
   }
+
 };
