@@ -1,45 +1,53 @@
-const { databases } = require("../config/appwrite");
-const { ID } = require("node-appwrite");
+const Order = require("../models/orderModel");
 
-const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
-const ORDER_COLLECTION_ID = "orders";
-
-exports.createOrder = async (req, res) => {
+// Get All Orders
+exports.getOrders = async (req, res) => {
   try {
-    const {
-      shopId,
-      fileId,
-      copies,
-      colorMode,
-      pageSize,
-      totalAmount
-    } = req.body;
-
-    const result = await databases.createDocument(
-      DATABASE_ID,
-      ORDER_COLLECTION_ID,
-      ID.unique(),
-      {
-        shopId,
-        fileId,
-        copies,
-        colorMode,
-        pageSize,
-        totalAmount,
-        paymentStatus: "pending",
-        printStatus: "pending"
-      }
-    );
+    const orders = await Order.find()
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      order: result
+      orders
     });
 
-  } catch (err) {
+  } catch (error) {
+
     res.status(500).json({
       success: false,
-      message: err.message
+      message: error.message
     });
+
+  }
+};
+
+
+// Get Single Order
+exports.getOrderById = async (req, res) => {
+  try {
+
+    const order = await Order.findById(
+      req.params.id
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      order
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
   }
 };
