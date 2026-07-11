@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const razorpay = require("../config/razorpay");
+const Order = require("../models/orderModel");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -57,12 +58,35 @@ exports.verifyPayment = async (req, res) => {
 
     if (expectedSignature === razorpay_signature) {
 
-      return res.json({
-        success: true,
-        message: "Payment Verified"
-      });
+  const {
+    pages,
+    copies,
+    color,
+    amount
+  } = req.body;
 
-    }
+
+  const newOrder = await Order.create({
+
+    pages: pages,
+    copies: copies,
+    printType: color,
+    amount: amount,
+
+    paymentId: razorpay_payment_id,
+
+    orderStatus: "Paid"
+
+  });
+
+
+  return res.json({
+    success: true,
+    message: "Payment Verified",
+    order: newOrder
+  });
+
+}
 
 
     res.status(400).json({
