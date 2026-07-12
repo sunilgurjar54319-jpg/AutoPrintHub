@@ -20,15 +20,16 @@ exports.saveRates = async (req, res) => {
       DATABASE_ID,
       RATE_COLLECTION_ID,
       ID.unique(),
-      {
-        shopId,
-        bwSingle,
-        bwMultiple,
-        colorSingle,
-        colorMultiple,
-        photo4x6,
-        a4Color
-      }
+     {
+  shopId,
+  bwSingle,
+  bwMultiple,
+  colorSingle,
+  colorMultiple,
+  photo4x6,
+  a4Color,
+  createdAt: new Date().toISOString()
+}
     );
 
     res.json({

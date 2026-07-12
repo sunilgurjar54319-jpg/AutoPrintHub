@@ -65,6 +65,23 @@ app.get("/debug-login", async (req, res) => {
 // API Routes
 app.use("/api/shop", shopRoutes);
 app.use("/api/rates", rateRoutes);
+app.get("/debug-rate", async (req, res) => {
+
+  const { saveRates } = require("./controllers/rateController");
+
+  req.body = {
+    shopId: "SHOP1783821759518",
+    bwSingle: 1,
+    bwMultiple: 2,
+    colorSingle: 5,
+    colorMultiple: 8,
+    photo4x6: 10,
+    a4Color: 20
+  };
+
+  return saveRates(req, res);
+
+});
 app.use("/api/printers", printerRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/orders", orderRoutes);
