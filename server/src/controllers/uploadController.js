@@ -6,12 +6,26 @@ const BUCKET_ID = process.env.APPWRITE_BUCKET_ID;
 
 exports.uploadFile = async (req, res) => {
   try {
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
         message: "No file uploaded"
       });
     }
+
+    const {
+      shopId
+    } = req.body;
+
+
+    if (!shopId) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID required"
+      });
+    }
+
 
     const result = await storage.createFile(
       BUCKET_ID,
@@ -22,18 +36,23 @@ exports.uploadFile = async (req, res) => {
       )
     );
 
-    return res.json({
+
+    res.json({
       success: true,
-      fileId: result.$id,
-      message: "Upload successful"
+      message: "Upload successful",
+      shopId,
+      fileId: result.$id
     });
 
+
   } catch (error) {
+
     console.error(error);
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: error.message
     });
+
   }
 };
