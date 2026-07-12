@@ -35,7 +35,7 @@ app.get("/test", (req, res) => {
   });
 });
 
-// Debug Register Route
+// Debug Register
 app.get("/debug-register", async (req, res) => {
   const { registerShop } = require("./controllers/shopController");
 
@@ -43,16 +43,27 @@ app.get("/debug-register", async (req, res) => {
     shopName: "Shri Dev Printing",
     ownerName: "Sunil",
     mobile: "9876543210",
-    email: "test@gmail.com",
     address: "Rajasthan",
-    upiId: "sunil@upi"
+    printerName: "HP Smart Tank 529",
+    printerType: "HP"
   };
 
   return registerShop(req, res);
 });
 
+// Debug Login
+app.get("/debug-login", async (req, res) => {
+  const { loginShop } = require("./controllers/shopController");
+
+  req.body = {
+    mobile: "9876543210"
+  };
+
+  return loginShop(req, res);
+});
+
 // API Routes
-app.use("/api/shops", shopRoutes);
+app.use("/api/shop", shopRoutes);
 app.use("/api/rates", rateRoutes);
 app.use("/api/printers", printerRoutes);
 app.use("/api/upload", uploadRoutes);
