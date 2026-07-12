@@ -2,71 +2,70 @@ const crypto = require("crypto");
 const razorpay = require("../config/razorpay");
 
 const { databases } = require("../config/appwrite");
-const { ID } = require("node-appwrite");
+const { Query } = require("node-appwrite");
 
 
 // Create Razorpay Order
 exports.createOrder = async (req, res) => {
+
   try {
 
-    const { amount } = req.body;
+    const {
+      orderId,
+      amount
+    } = req.body;
 
-    const options = {
-      amount: amount * 100,
-      currency: "INR",
-      receipt: "autoprint_order_" + Date.now()
-    };
+    const razorpayOrder =
+      await razorpay.orders.create({
 
+        amount: Number(amount) * 100,
 
-    const order = await razorpay.orders.create(options);
+        currency: "INR",
 
+        receipt: orderId
+
+      });
 
     res.json({
-      success: true,
-      order
-    });
 
+      success: true,
+
+      razorpayOrder
+
+    });
 
   } catch (error) {
 
     console.log(error);
 
     res.status(500).json({
-      success:false,
-      message:error.message
+
+      success: false,
+
+      message: error.message
+
     });
 
   }
+
 };
-
-
-
-
-// Verify Payment
+// Verify Razorpay Payment
 exports.verifyPayment = async (req, res) => {
 
   try {
 
-
     const {
+      orderId,
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature,
-
-      pages,
-      copies,
-      color,
-      amount
-
+      razorpay_signature
     } = req.body;
-
 
 
     const body =
       razorpay_order_id +
       "|" +
       razorpay_payment_id;
-
 
 
     const expectedSignature =
@@ -79,82 +78,92 @@ exports.verifyPayment = async (req, res) => {
       .digest("hex");
 
 
+    if (expectedSignature !== razorpay_signature) {
 
-    if(expectedSignature === razorpay_signature){
+      return res.status(400).json({
+
+        success: false,
+
+        message: "Invalid Signature"
+
+      });
+
+    }
 
 
-
-      const order =
-      await databases.createDocument(
+    const result =
+      await databases.listDocuments(
 
         process.env.APPWRITE_DATABASE_ID,
 
         process.env.APPWRITE_ORDER_COLLECTION_ID,
 
-        ID.unique(),
+        [
+          Query.equal("$id", orderId)
+        ]
+
+      );
+
+
+    if (result.total === 0) {
+
+      return res.status(404).json({
+
+        success: false,
+
+        message: "Order Not Found"
+
+      });
+
+    }
+
+
+    const order = result.documents[0];
+    const updatedOrder =
+      await databases.updateDocument(
+
+        process.env.APPWRITE_DATABASE_ID,
+
+        process.env.APPWRITE_ORDER_COLLECTION_ID,
+
+        order.$id,
 
         {
 
+          status: "PAID",
+
           paymentId: razorpay_payment_id,
 
-          pages: Number(pages),
+          razorpayOrderId: razorpay_order_id,
 
-          copies: Number(copies),
-
-          printType: color,
-
-          amount: Number(amount),
-
-          status: "Paid",
-
-          createdAt:
-          new Date().toISOString()
+          paidAt: new Date().toISOString()
 
         }
 
       );
 
 
+    return res.json({
 
-      return res.json({
+      success: true,
 
-        success:true,
+      message: "Payment Verified Successfully",
 
-        message:"Payment Verified",
-
-        order
-
-      });
-
-
-    }
-
-
-
-    res.status(400).json({
-
-      success:false,
-
-      message:"Invalid Signature"
+      order: updatedOrder
 
     });
 
-
-
-  } catch(error){
-
+  } catch (error) {
 
     console.log(error);
 
-
     res.status(500).json({
 
-      success:false,
+      success: false,
 
-      message:error.message
+      message: error.message
 
     });
-
 
   }
 
