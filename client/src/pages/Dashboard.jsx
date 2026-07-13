@@ -119,13 +119,15 @@ useEffect(() => {
     );
 
     await api.put(
-      `/orders/${order.$id}/status`,
-      {
-        status: "PRINTING"
-      }
-    );
+  `/orders/${order.$id}/status`,
+  {
+    status: "PRINTING"
+  }
+);
 
-    alert("Print started");
+window.location.reload();
+
+alert("Print started");
 
   } catch (error) {
     alert("Print start failed");
