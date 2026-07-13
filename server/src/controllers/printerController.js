@@ -37,3 +37,20 @@ exports.getPrintQueue = async (req, res) => {
   }
 
 };
+exports.startPrint = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    res.json({
+      success: true,
+      message: "Print started",
+      orderId
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

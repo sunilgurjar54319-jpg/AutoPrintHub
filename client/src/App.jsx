@@ -1,8 +1,8 @@
-import RegisterShop from "./pages/RegisterShop";
 import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
 import ShopPrint from "./pages/ShopPrint";
+import RegisterShop from "./pages/RegisterShop";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 

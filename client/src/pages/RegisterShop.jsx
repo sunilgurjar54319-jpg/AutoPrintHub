@@ -16,7 +16,7 @@ function RegisterShop() {
       setLoading(true);
 
       const res = await api.post(
-  "/shops/register",,
+  "/shops/register",
         {
           shopName,
           ownerName,

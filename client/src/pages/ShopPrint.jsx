@@ -21,7 +21,7 @@ function ShopPrint() {
 
   const [message, setMessage] = useState("");
 
-
+  const [orderStatus, setOrderStatus] = useState("");
 
   useEffect(() => {
 
@@ -30,17 +30,21 @@ function ShopPrint() {
 
   }, []);
 
-
+  useEffect(() => {
+  calculatePrice();
+}, [rates, printType, copies]);
 
   const getShop = async () => {
 
   try {
 
     const res = await axios.get(
-      `https://autoprint-hub-server.onrender.com/api/shops/${shopId}`
-    );
+  `https://autoprint-hub-server.onrender.com/api/shops/${shopId}`
+);
 
-    setShop(res.data.shop);
+console.log("SHOP API RESPONSE:", res.data);
+
+setShop(res.data.shop);
 
   } catch(error) {
 
@@ -261,6 +265,7 @@ console.log("APPWRITE ORDER ID:", orderId);
 
     if(verify.data.success){
 
+      setOrderStatus("Payment Completed ✅");
       alert("Payment Verified Successfully");
 
     } else {
@@ -395,6 +400,19 @@ console.log("APPWRITE ORDER ID:", orderId);
 >
   Pay Now
 </button>
+{orderStatus && (
+  <div
+    style={{
+      marginTop: 20,
+      padding: 12,
+      background: "#e8f5e9",
+      borderRadius: 8,
+      textAlign: "center"
+    }}
+  >
+    <b>Status:</b> {orderStatus}
+  </div>
+)}
       <br /><br />
 
       {uploadedFileId && (
