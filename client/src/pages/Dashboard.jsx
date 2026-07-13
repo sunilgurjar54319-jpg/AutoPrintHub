@@ -16,10 +16,13 @@ function Dashboard() {
 
 useEffect(() => {
 
-  api.get("/orders")
-  .then((res)=>{
-
-    setOrders(res.data.orders || []);
+  const fetchOrders = async () => {
+  const res = await api.get("/orders");
+  setOrders(res.data.orders || []);
+  useEffect(() => {
+  fetchOrders();
+}, []);
+},
 
     const orders = res.data.orders || [];
 
