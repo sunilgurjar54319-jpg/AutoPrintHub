@@ -56,3 +56,24 @@ exports.uploadFile = async (req, res) => {
 
   }
 };
+exports.getFileUrl = async (req, res) => {
+  try {
+
+    const { fileId } = req.params;
+
+    const url = `${process.env.APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=${process.env.APPWRITE_PROJECT_ID}`;
+
+    res.json({
+      success: true,
+      url
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
