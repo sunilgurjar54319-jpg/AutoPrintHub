@@ -152,3 +152,25 @@ exports.getOrderById = async (req,res)=>{
   }
 
 };
+exports.updateOrderStatus = async (req, res) => {
+  try {
+
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    res.json({
+      success: true,
+      message: "Status updated",
+      orderId,
+      status
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};

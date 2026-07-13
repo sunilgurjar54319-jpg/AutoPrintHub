@@ -4,7 +4,8 @@ const router = express.Router();
 const {
   createOrder,
   getOrders,
-  getOrderById
+  getOrderById,
+  updateOrderStatus
 } = require("../controllers/orderController");
 
 
@@ -19,5 +20,6 @@ router.get("/", getOrders);
 // Get Single Order
 router.get("/:id", getOrderById);
 
+router.put("/:id/status", updateOrderStatus);
 
 module.exports = router;

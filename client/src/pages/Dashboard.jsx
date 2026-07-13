@@ -112,19 +112,26 @@ useEffect(() => {
 </button>
 <button
   onClick={async () => {
-    try {
+  try {
 
-      const res = await api.post(
-        `/printers/start/${order.$id}`
-      );
+    const res = await api.post(
+      `/printers/start/${order.$id}`
+    );
 
-      alert(res.data.message);
+    await api.put(
+      `/orders/${order.$id}/status`,
+      {
+        status: "PRINTING"
+      }
+    );
 
-    } catch (error) {
-      alert("Print start failed");
-      console.log(error);
-    }
-  }}
+    alert("Print started");
+
+  } catch (error) {
+    alert("Print start failed");
+    console.log(error);
+  }
+}}
 >
   🖨️ Print
 </button>
