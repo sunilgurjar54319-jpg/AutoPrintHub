@@ -155,17 +155,27 @@ exports.getOrderById = async (req,res)=>{
 exports.updateOrderStatus = async (req, res) => {
   try {
 
-    const { orderId } = req.params;
+    const { id } = req.params;
     const { status } = req.body;
+
+    const order = await databases.updateDocument(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
+      id,
+      {
+        status
+      }
+    );
 
     res.json({
       success: true,
       message: "Status updated",
-      orderId,
-      status
+      order
     });
 
   } catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
       success: false,
