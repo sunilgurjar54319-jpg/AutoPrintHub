@@ -3,10 +3,13 @@ const router = express.Router();
 
 const {
   startPrint,
-  getPrintQueue
+  getPrintQueue,
+  markPrinted
 } = require("../controllers/printerController");
 
 router.post("/start/:orderId", startPrint);
+
+router.post("/printed/:orderId", markPrinted);
 
 router.get("/queue/:shopId", getPrintQueue);
 

@@ -54,3 +54,32 @@ exports.startPrint = async (req, res) => {
     });
   }
 };
+exports.markPrinted = async (req, res) => {
+  try {
+
+    const { orderId } = req.params;
+
+await databases.updateDocument(
+  process.env.APPWRITE_DATABASE_ID,
+  process.env.APPWRITE_ORDER_COLLECTION_ID,
+  orderId,
+  {
+    status: "PRINTED"
+  }
+);
+
+res.json({
+  success: true,
+  message: "Order marked as PRINTED",
+  orderId
+});
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};

@@ -157,7 +157,26 @@ function Dashboard() {
               >
                 🖨️ Print
               </button>
+<button
+  onClick={async () => {
+    try {
 
+      const res = await api.post(
+        `/printers/printed/${order.$id}`
+      );
+
+      alert(res.data.message);
+
+      window.location.reload();
+
+    } catch (error) {
+      alert("Mark Printed failed");
+      console.log(error);
+    }
+  }}
+>
+  ✅ Mark Printed
+</button>
 
             </td>
 
