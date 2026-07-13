@@ -1,6 +1,6 @@
 import axios from "axios";
 
-function PriceCard({ pages, copies, color, total }) {
+function PriceCard({ pages, copies, color, total, orderId }) {
 
   const rate = color === "bw" ? 2 : 10;
 
@@ -9,16 +9,17 @@ function PriceCard({ pages, copies, color, total }) {
 
       // Create Razorpay Order
       const res = await axios.post(
-        "https://autoprint-hub-server.onrender.com/api/payment/create",
-        {
-          amount: total
-        }
-      );
+  "https://autoprint-hub-server.onrender.com/api/payment/create",
+  {
+    orderId: orderId,
+    amount: total
+  }
+);
 
-      const order = res.data.order;
+      const order = res.data.razorpayOrder;
 
       const options = {
-        key: "YOUR_RAZORPAY_TEST_KEY",
+        key: "rzp_test_TBv0I8JsoAY5JU",
         amount: order.amount,
         currency: order.currency,
         name: "AutoPrint Hub",
@@ -32,6 +33,8 @@ function PriceCard({ pages, copies, color, total }) {
             const verify = await axios.post(
               "https://autoprint-hub-server.onrender.com/api/payment/verify",
               {
+                orderId: order.id,
+
                 razorpay_order_id:
                   response.razorpay_order_id,
 
@@ -62,7 +65,8 @@ function PriceCard({ pages, copies, color, total }) {
 
           } catch (error) {
 
-            console.log(error);
+            console.log(error.response?.data);
+alert(error.response?.data?.message || error.message);
             alert("Verification Error");
 
           }

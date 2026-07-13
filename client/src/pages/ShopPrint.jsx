@@ -34,47 +34,43 @@ function ShopPrint() {
 
   const getShop = async () => {
 
-    try {
+  try {
 
-      const res = await axios.get(
+    const res = await axios.get(
+      `https://autoprint-hub-server.onrender.com/api/shops/${shopId}`
+    );
 
-        `https://autoprint-hub-server.onrender.com/api/rates/${shopId}`
+    setShop(res.data.shop);
 
-      );
+  } catch(error) {
 
-      setShop(res.data.shop);
+    console.log(error);
 
-    } catch (error) {
+    setMessage("Shop Load Failed");
 
-      console.log(error);
+  }
 
-      setMessage("Shop Load Failed");
-
-    }
-
-  };
+};
 
 
 
   const getRates = async () => {
 
-    try {
+  try {
 
-      const res = await axios.get(
+    const res = await axios.get(
+      `https://autoprint-hub-server.onrender.com/api/rates/${shopId}`
+    );
 
-        `https://autoprint-hub-server.onrender.com/api/shops/${shopId}`
+    setRates(res.data.rates);
 
-      );
+  } catch(error) {
 
-      setRates(res.data.rates);
+    console.log(error);
 
-    } catch (error) {
+  }
 
-      console.log(error);
-
-    }
-
-  };
+};
 
 
 
@@ -137,7 +133,7 @@ function ShopPrint() {
 
       );
 
-    } catch (error) {
+  }   catch(error) {
 
   console.log(error);
 
@@ -155,52 +151,158 @@ function ShopPrint() {
 
   const createOrder = async () => {
 
-    if (!uploadedFileId) {
+  if(!uploadedFileId){
 
-      setMessage("Please upload file first");
-      return;
+    setMessage("Please upload file first");
+    return;
+
+  }
+
+
+  try {
+
+    const res = await axios.post(
+
+      "https://autoprint-hub-server.onrender.com/api/orders",
+
+      {
+        shopId,
+
+        fileId: uploadedFileId,
+
+        fileName: file.name,
+
+        printType,
+
+        copies: Number(copies),
+
+        totalPrice: Number(price)
+
+      }
+
+    );
+
+
+    setOrderId(res.data.order.$id);
+
+    setMessage("Order Created Successfully");
+
+
+  } catch(error) {
+
+
+    console.log(error);
+
+    console.log(error.response?.data);
+
+
+    setMessage(
+      error.response?.data?.message || error.message
+    );
+
+
+  }
+
+};
+
+const startPayment = async () => {
+
+console.log("APPWRITE ORDER ID:", orderId);
+
+  try {
+
+    const res = await axios.post(
+      "https://autoprint-hub-server.onrender.com/api/payment/create",
+      {
+        orderId: orderId,
+        amount: Number(price)
+      }
+    );
+
+
+    const order = res.data.razorpayOrder;
+
+
+    const options = {
+
+      key: "rzp_test_TBv0I8JsoAY5JU",
+
+      amount: order.amount,
+
+      currency: order.currency,
+
+      name: "AutoPrint Hub",
+
+      description: "Printing Payment",
+
+      order_id: order.id,
+
+
+      handler: async function(response){
+
+  try {
+
+    const verify = await axios.post(
+      "https://autoprint-hub-server.onrender.com/api/payment/verify",
+      {
+        orderId: orderId,
+
+        razorpay_order_id:
+          response.razorpay_order_id,
+
+        razorpay_payment_id:
+          response.razorpay_payment_id,
+
+        razorpay_signature:
+          response.razorpay_signature
+      }
+    );
+
+
+    if(verify.data.success){
+
+      alert("Payment Verified Successfully");
+
+    } else {
+
+      alert("Payment Verification Failed");
 
     }
 
-    try {
 
-      const res = await axios.post(
+  } catch(error){
 
-        "https://autoprint-hub-server.onrender.com/api/orders",
+    console.log(error);
+    alert(
+      error.response?.data?.message || "Verification Error"
+    );
 
-        {
+  }
 
-          shopId,
-
-          fileId: uploadedFileId,
-
-          fileName: file.name,
-
-          printType,
-
-          copies: Number(copies),
-
-          totalPrice: Number(price)
-
-        }
-
-      );
-
-      setOrderId(res.data.order.$id);
-
-      setMessage("Order Created Successfully");
-
-    } catch (error) {
-
-      console.log(error);
-
-      setMessage("Order Create Failed");
-
-    }
-
-  };
+},
 
 
+      theme:{
+        color:"#2563eb"
+      }
+
+    };
+
+
+    const razor = new window.Razorpay(options);
+
+    razor.open();
+
+
+  } catch(error){
+
+    console.log(error);
+
+    alert("Payment Failed");
+
+  }
+
+};
 
   if (!shop) {
 
@@ -287,7 +389,12 @@ function ShopPrint() {
       >
         Create Order
       </button>
-
+      <button
+  onClick={startPayment}
+  disabled={!orderId}
+>
+  Pay Now
+</button>
       <br /><br />
 
       {uploadedFileId && (

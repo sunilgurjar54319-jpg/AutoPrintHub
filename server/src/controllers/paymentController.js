@@ -2,7 +2,6 @@ const crypto = require("crypto");
 const razorpay = require("../config/razorpay");
 
 const { databases } = require("../config/appwrite");
-const { Query } = require("node-appwrite");
 
 
 // Create Razorpay Order
@@ -91,34 +90,16 @@ exports.verifyPayment = async (req, res) => {
     }
 
 
-    const result =
-      await databases.listDocuments(
+    const order =
+  await databases.getDocument(
 
-        process.env.APPWRITE_DATABASE_ID,
+    process.env.APPWRITE_DATABASE_ID,
 
-        process.env.APPWRITE_ORDER_COLLECTION_ID,
+    process.env.APPWRITE_ORDER_COLLECTION_ID,
 
-        [
-          Query.equal("$id", orderId)
-        ]
+    orderId
 
-      );
-
-
-    if (result.total === 0) {
-
-      return res.status(404).json({
-
-        success: false,
-
-        message: "Order Not Found"
-
-      });
-
-    }
-
-
-    const order = result.documents[0];
+  );
     const updatedOrder =
       await databases.updateDocument(
 

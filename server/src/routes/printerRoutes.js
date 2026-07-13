@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { registerPrinter } = require("../controllers/printerController");
+const {
+  getPrintQueue
+} = require("../controllers/printerController");
 
-router.post("/register", registerPrinter);
+
+router.get("/queue/:shopId", getPrintQueue);
+
 
 module.exports = router;

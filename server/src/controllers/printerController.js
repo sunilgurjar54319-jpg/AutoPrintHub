@@ -1,41 +1,39 @@
 const { databases } = require("../config/appwrite");
-const { ID } = require("node-appwrite");
+const { Query } = require("node-appwrite");
 
-const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
-const PRINTER_COLLECTION_ID = "printers";
 
-exports.registerPrinter = async (req, res) => {
+exports.getPrintQueue = async (req, res) => {
+
   try {
-    const {
-      shopId,
-      printerName,
-      printerType,
-      printerModel
-    } = req.body;
 
-    const result = await databases.createDocument(
-      DATABASE_ID,
-      PRINTER_COLLECTION_ID,
-      ID.unique(),
-      {
-        shopId,
-        printerName,
-        printerType,
-        printerModel,
-        status: "online"
-      }
+    const { shopId } = req.params;
+
+
+    const orders = await databases.listDocuments(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
+      [
+        Query.equal("shopId", shopId),
+        Query.equal("status", "PAID")
+      ]
     );
+
 
     res.json({
       success: true,
-      message: "Printer Registered Successfully",
-      data: result
+      orders: orders.documents
     });
 
-  } catch (err) {
+
+  } catch(error) {
+
+    console.log(error);
+
     res.status(500).json({
-      success: false,
-      message: err.message
+      success:false,
+      message:error.message
     });
+
   }
+
 };

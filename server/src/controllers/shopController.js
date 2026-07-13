@@ -1,5 +1,6 @@
 const { databases } = require("../config/appwrite");
 const { ID, Query } = require("node-appwrite");
+const QRCode = require("qrcode");
 
 exports.registerShop = async (req, res) => {
   try {
@@ -28,6 +29,12 @@ exports.registerShop = async (req, res) => {
 
     const shopId = "SHOP" + Date.now();
     const agentToken = ID.unique();
+const shopUrl =
+  `${process.env.PUBLIC_APP_URL}/shop/${shopId}`;
+
+const qrCode =
+  await QRCode.toDataURL(shopUrl);
+console.log(qrCode.substring(0, 50));
 
     const shop = await databases.createDocument(
       process.env.APPWRITE_DATABASE_ID,
@@ -42,7 +49,8 @@ exports.registerShop = async (req, res) => {
         printerName,
         printerType,
         agentToken,
-        status: "ACTIVE"
+        status: "ACTIVE",
+        qrCode
       }
     );
 

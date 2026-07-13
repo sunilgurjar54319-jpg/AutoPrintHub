@@ -29,11 +29,11 @@ function Home() {
       />
 
       <PriceCard
-        pages={pages}
-        copies={copies}
-        color={color}
-        total={total}
-      />
+  pages={pages}
+  copies={copies}
+  color={color}
+  total={total}
+/>
 
     </div>
   );
