@@ -5,6 +5,7 @@ import ShopPrint from "./pages/ShopPrint";
 import RegisterShop from "./pages/RegisterShop";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
   <Route path="/register-shop" element={<RegisterShop />} />
   <Route path="/login" element={<Login />} />
   <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/settings" element={<Settings />} />
 </Routes>
   );
 }

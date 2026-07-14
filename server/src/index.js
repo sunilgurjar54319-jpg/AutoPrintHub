@@ -16,7 +16,7 @@ const calculateRoutes = require("./routes/calculateRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const uploadOrderRoutes = require("./routes/uploadOrderRoutes");
 const pdfRoutes = require("./routes/pdfRoutes");
-
+const settingsRoutes = require("./routes/settingsRoutes");
 
 
 // Middleware
@@ -174,7 +174,7 @@ app.use("/api/upload-order", uploadOrderRoutes);
 
 app.use("/api/pdf", pdfRoutes);
 
-
+app.use("/api/settings", settingsRoutes);
 
 
 // Server Start

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import "../styles/Dashboard.css";
 import { useState, useEffect } from "react";
 import api from "../services/api";
 
@@ -82,20 +84,85 @@ function Dashboard() {
 
 
   return (
-    <div>
+  <div className="dashboard-layout">
 
+  <div className="sidebar">
+  <h2>🖨️ AutoPrintHub</h2>
+
+  <hr />
+
+  <Link to="/dashboard" style={{ color: "white", textDecoration: "none" }}>
+  <p>📊 Dashboard</p>
+</Link>
+
+<Link to="/settings" style={{ color: "white", textDecoration: "none" }}>
+  <p>⚙️ Settings</p>
+</Link>
+
+<p>📄 Orders (Coming Soon)</p>
+
+<p>🚪 Logout (Coming Soon)</p>
+</div>
+
+<div className="main">
       <h2>📊 Shop Dashboard</h2>
 
-      <div>Total Orders : {stats.totalOrders}</div>
-      <div>Pending : {stats.pending}</div>
-      <div>Paid : {stats.paid}</div>
-      <div>Printed : {stats.printed}</div>
-      <div>Revenue : ₹{stats.revenue}</div>
+      <div style={{ marginBottom: "20px" }}>
+  <Link to="/settings">
+    <button>⚙️ Settings</button>
+  </Link>
+</div>
+
+      <div className="cards">
+
+  <div
+  className="card"
+  style={{ background:"#1976d2" }}
+>
+    <h3>{stats.totalOrders}</h3>
+    <p>Total Orders</p>
+  </div>
+
+  <div
+  className="card"
+  style={{ background:"##f57c00" }}
+>
+    <h3>{stats.pending}</h3>
+    <p>Pending</p>
+  </div>
+
+  <div
+  className="card"
+  style={{ background:"#2e7d32" }}
+>
+    <h3>{stats.paid}</h3>
+    <p>Paid</p>
+  </div>
+
+  <div
+  className="card"
+  style={{ background:"#6a1b9a" }}
+>
+    <h3>{stats.printed}</h3>
+    <p>Printed</p>
+  </div>
+
+  <div
+  className="card"
+  style={{ background:"#00897b" }}
+>
+    <h3>₹{stats.revenue}</h3>
+    <p>Revenue</p>
+  </div>
+
+</div>
 
 
-      <h3>📋 Recent Orders</h3>
+      <div className="table-box">
 
-      <table border="1" width="100%">
+<h3>📋 Recent Orders</h3>
+
+<table border="1" width="100%">
 
         <thead>
           <tr>
@@ -188,9 +255,13 @@ function Dashboard() {
 
       </table>
 
+</div>
+      
 
     </div>
-  );
+
+</div>
+);
 }
 
 
