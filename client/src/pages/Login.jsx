@@ -1,64 +1,89 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 function Login() {
-  const [mobile, setMobile] = useState("");
+
   const navigate = useNavigate();
 
+  const [mobile, setMobile] = useState("");
+
   const login = async () => {
+
     try {
+
       const res = await api.post("/shops/login", {
-        mobile,
+        mobile
       });
 
+      const shop = res.data.shop;
+
       localStorage.setItem(
-        "shop",
-        JSON.stringify(res.data.shop)
+        "shopId",
+        shop.shopId
+      );
+
+      localStorage.setItem(
+        "shopName",
+        shop.shopName
       );
 
       alert("Login Successful");
 
       navigate("/dashboard");
-    } catch (err) {
-      alert("Shop not found");
-      console.log(err);
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Login Failed"
+      );
+
     }
+
   };
 
   return (
-    <div style={{ padding: 30, maxWidth: 400, margin: "auto" }}>
-      <h1>🏪 Shop Login</h1>
+
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "50px auto",
+        padding: "20px"
+      }}
+    >
+
+      <h2>🏪 Shop Login</h2>
 
       <input
         type="text"
-        placeholder="Mobile Number"
+        placeholder="Enter Mobile Number"
         value={mobile}
-        onChange={(e) => setMobile(e.target.value)}
+        onChange={(e) =>
+          setMobile(e.target.value)
+        }
         style={{
           width: "100%",
-          padding: 10,
-          marginBottom: 15,
+          padding: "10px"
         }}
       />
+
+      <br /><br />
 
       <button
         onClick={login}
         style={{
           width: "100%",
-          padding: 10,
+          padding: "12px"
         }}
       >
         Login
       </button>
 
-      <br />
-      <br />
-
-      <Link to="/register-shop">
-        Register New Shop
-      </Link>
     </div>
+
   );
 }
 
