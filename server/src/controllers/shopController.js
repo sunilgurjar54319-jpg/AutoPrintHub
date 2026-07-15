@@ -1,21 +1,9 @@
-const   shopId,
-  shopName,
-  ownerName,
-  mobile,
-  address,
-  printerName,
-  printerType,
-  qrCode,
-  status:"ACTIVE"
-  agentToken: ID.unique(),
-}{ databases } = require("../config/appwrite");
+const { databases } = require("../config/appwrite");
 const { ID, Query } = require("node-appwrite");
 const QRCode = require("qrcode");
 
-
 exports.registerShop = async (req, res) => {
   try {
-
     const {
       shopName,
       ownerName,
@@ -25,88 +13,112 @@ exports.registerShop = async (req, res) => {
       printerType
     } = req.body;
 
-
     const shopId = "SHOP" + Date.now();
 
     const shopUrl =
-      `${process.env.PUBLIC_APP_URL}/shop/${shopId}`;
+      `${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;
 
-    const qrCode =
-      await QRCode.toDataURL(shopUrl);
+    const qrCode = await QRCode.toDataURL(shopUrl);
 
-
-    const shop =
-      await databases.createDocument(
-        process.env.APPWRITE_DATABASE_ID,
-        process.env.APPWRITE_SHOPS_COLLECTION_ID,
-        ID.unique(),
-        {
-          shopId,
-          shopName,
-          ownerName,
-          mobile,
-          address,
-          printerName,
-          printerType,
-          qrCode,
-          status:"ACTIVE"
-        }
-      );
-
+    const shop = await databases.createDocument(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_SHOPS_COLLECTION_ID,
+      ID.unique(),
+      {
+        shopId,
+        shopName,
+        ownerName,
+        mobile,
+        address,
+        printerName,
+        printerType,
+        qrCode,
+        status: "ACTIVE",
+        agentToken: ID.unique()
+      }
+    );
 
     res.json({
-      success:true,
+      success: true,
       shop
     });
 
-
-  } catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      success:false,
-      message:error.message
+      success: false,
+      message: error.message
     });
 
   }
 };
 
+exports.loginShop = async (req, res) => {
+  try {
 
-exports.loginShop = async (req,res)=>{
-  try{
+    const { mobile } = req.body;
 
-    const {mobile}=req.body;
+    const result = await databases.listDocuments(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_SHOPS_COLLECTION_ID,
+      [Query.equal("mobile", mobile)]
+    );
 
-    const result =
-      await databases.listDocuments(
-        process.env.APPWRITE_DATABASE_ID,
-        process.env.APPWRITE_SHOPS_COLLECTION_ID,
-        [Query.equal("mobile",mobile)]
-      );
-
-
-    if(result.total===0){
+    if (result.total === 0) {
       return res.status(404).json({
-        success:false,
-        message:"Shop not found"
+        success: false,
+        message: "Shop not found"
       });
     }
 
-
     res.json({
-      success:true,
-      shop:result.documents[0]
+      success: true,
+      shop: result.documents[0]
     });
 
-
-  }catch(error){
+  } catch (error) {
 
     res.status(500).json({
-      success:false,
-      message:error.message
+      success: false,
+      message: error.message
     });
 
   }
 };
+
+exports.getShopById = async (req, res) => {
+  try {
+
+    const { shopId } = req.params;
+
+    const result = await databases.listDocuments(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_SHOPS_COLLECTION_ID,
+      [Query.equal("shopId", shopId)]
+    );
+
+    if (result.total === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Shop not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      shop: result.documents[0]
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
+
 exports.getShopSettings = async (req, res) => {
   try {
 
@@ -140,9 +152,7 @@ exports.getShopSettings = async (req, res) => {
   }
 };
 
-
 exports.updateShopSettings = async (req, res) => {
-
   try {
 
     const {
@@ -160,12 +170,10 @@ exports.updateShopSettings = async (req, res) => {
     );
 
     if (result.total === 0) {
-
       return res.status(404).json({
         success: false,
         message: "Shop not found"
       });
-
     }
 
     const shop = result.documents[0];
@@ -189,52 +197,9 @@ exports.updateShopSettings = async (req, res) => {
 
   } catch (error) {
 
-    console.log(error);
-
     res.status(500).json({
       success: false,
       message: error.message
-    });
-
-  }
-
-};
-exports.getShopById = async (req,res)=>{
-  try{
-
-    const { shopId } = req.params;
-
-    const result =
-      await databases.listDocuments(
-        process.env.APPWRITE_DATABASE_ID,
-        process.env.APPWRITE_SHOPS_COLLECTION_ID,
-        [
-          Query.equal("shopId", shopId)
-        ]
-      );
-
-
-    if(result.total === 0){
-
-      return res.status(404).json({
-        success:false,
-        message:"Shop not found"
-      });
-
-    }
-
-
-    res.json({
-      success:true,
-      shop:result.documents[0]
-    });
-
-
-  }catch(error){
-
-    res.status(500).json({
-      success:false,
-      message:error.message
     });
 
   }
