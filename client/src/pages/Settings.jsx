@@ -9,266 +9,117 @@ function Settings() {
     bwSingle: "",
     bwDouble: "",
     colorSingle: "",
-    colorDouble: "",
-    upiId: "",
-    receiverMode: "RAZORPAY",
-    paytmMerchantUpi: "",
-    paytmMid: ""
+    colorDouble: ""
   });
-
 
   const loadSettings = async () => {
     try {
 
-      const res = await api.get(
-        `/shops/settings/${SHOP_ID}`
-      );
+      const res = await api.get(`/shops/settings/${SHOP_ID}`);
 
       const settings = res.data.settings;
 
       setForm({
-
         bwSingle: settings.bwSingle || "",
-
         bwDouble: settings.bwDouble || "",
-
         colorSingle: settings.colorSingle || "",
-
-        colorDouble: settings.colorDouble || "",
-
-        upiId: settings.upiId || "",
-
-        receiverMode:
-          settings.receiverMode || "RAZORPAY",
-
-        paytmMerchantUpi:
-          settings.paytmMerchantUpi || "",
-
-        paytmMid:
-          settings.paytmMid || ""
-
+        colorDouble: settings.colorDouble || ""
       });
 
-
     } catch (error) {
-
       console.log(error);
-
     }
   };
 
-
   useEffect(() => {
-
     loadSettings();
-
   }, []);
-
-
 
   const saveSettings = async () => {
 
     try {
 
-      await api.put(
-        "/shops/settings",
-        {
-          shopId: SHOP_ID,
-          ...form
-        }
-      );
-
+      await api.put("/shops/settings", {
+        shopId: SHOP_ID,
+        ...form
+      });
 
       alert("Settings Saved Successfully");
 
-
-    } catch(error) {
+    } catch (error) {
 
       console.log(error);
-
       alert("Save Failed");
 
     }
 
   };
 
-
-
   return (
 
-    <div style={{padding:"30px"}}>
+    <div style={{ padding: "30px", maxWidth: "500px", margin: "auto" }}>
 
-      <h2>⚙️ Settings</h2>
-
-
-      <h3>Print Price</h3>
-
+      <h2>⚙️ Print Price Settings</h2>
 
       <input
         value={form.bwSingle}
-        onChange={(e)=>
+        onChange={(e) =>
           setForm({
             ...form,
-            bwSingle:e.target.value
+            bwSingle: e.target.value
           })
         }
         placeholder="B/W Single Price"
       />
 
-      <br/><br/>
-
+      <br /><br />
 
       <input
         value={form.bwDouble}
-        onChange={(e)=>
+        onChange={(e) =>
           setForm({
             ...form,
-            bwDouble:e.target.value
+            bwDouble: e.target.value
           })
         }
         placeholder="B/W Double Price"
       />
 
-      <br/><br/>
-
+      <br /><br />
 
       <input
         value={form.colorSingle}
-        onChange={(e)=>
+        onChange={(e) =>
           setForm({
             ...form,
-            colorSingle:e.target.value
+            colorSingle: e.target.value
           })
         }
         placeholder="Color Single Price"
       />
 
-      <br/><br/>
-
+      <br /><br />
 
       <input
         value={form.colorDouble}
-        onChange={(e)=>
+        onChange={(e) =>
           setForm({
             ...form,
-            colorDouble:e.target.value
+            colorDouble: e.target.value
           })
         }
         placeholder="Color Double Price"
       />
 
-
-      <br/><br/>
-
-
-      ...
-
-
-
-      <input
-        value={form.upiId}
-        onChange={(e)=>
-          setForm({
-            ...form,
-            upiId:e.target.value
-          })
-        }
-        placeholder="Enter UPI ID"
-      />
-
-
-      <br/><br/>
-
-
-      <h3>Payment Receiver</h3>
-
-
-      <select
-
-        value={form.receiverMode}
-
-        onChange={(e)=>
-          setForm({
-            ...form,
-            receiverMode:e.target.value
-          })
-        }
-
-      >
-
-        <option value="RAZORPAY">
-          Razorpay
-        </option>
-
-
-        <option value="PAYTM">
-          Paytm Business
-        </option>
-
-
-      </select>
-
-
-      <br/><br/>
-
-
-
-      <h3>Paytm Merchant UPI</h3>
-
-
-      <input
-
-        value={form.paytmMerchantUpi}
-
-        onChange={(e)=>
-          setForm({
-            ...form,
-            paytmMerchantUpi:e.target.value
-          })
-        }
-
-        placeholder="shopname@paytm"
-
-      />
-
-
-      <br/><br/>
-
-
-
-      <h3>Paytm MID</h3>
-
-
-      <input
-
-        value={form.paytmMid}
-
-        onChange={(e)=>
-          setForm({
-            ...form,
-            paytmMid:e.target.value
-          })
-        }
-
-        placeholder="Enter Paytm MID"
-
-      />
-
-
-      <br/><br/>
-
-
+      <br /><br />
 
       <button onClick={saveSettings}>
-        Save Settings
+        💾 Save Settings
       </button>
-
 
     </div>
 
   );
-
 }
-
 
 export default Settings;
