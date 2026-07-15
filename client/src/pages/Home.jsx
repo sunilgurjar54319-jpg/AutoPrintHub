@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import Header from "../components/Header";
 import UploadForm from "../components/UploadForm";
@@ -17,22 +16,6 @@ function Home() {
     <div>
       <Header />
 
-      <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    gap: "10px",
-    margin: "20px"
-  }}
->
-  <Link to="/login">
-    <button>🏪 Shop Login</button>
-  </Link>
-
-  <Link to="/register-shop">
-    <button>➕ Register Shop</button>
-  </Link>
-</div>
 
      <UploadForm 
   setPages={setPages}
