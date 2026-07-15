@@ -1,9 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import { useState, useEffect } from "react";
 import api from "../services/api";
 
 function Dashboard() {
+
+  const navigate = useNavigate();
+
+const shop = JSON.parse(
+  localStorage.getItem("shop")
+);
+
+useEffect(() => {
+  if (!shop) {
+    navigate("/login");
+  }
+}, []);
 
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -101,11 +113,33 @@ function Dashboard() {
 
 <p>📄 Orders (Coming Soon)</p>
 
-<p>🚪 Logout (Coming Soon)</p>
+<p
+  style={{ cursor: "pointer" }}
+  onClick={() => {
+    localStorage.removeItem("shop");
+    navigate("/login");
+  }}
+>
+  🚪 Logout
+</p>
 </div>
 
 <div className="main">
       <h2>📊 Shop Dashboard</h2>
+
+      <h3>{shop?.shopName}</h3>
+
+<p>🆔 {shop?.shopId}</p>
+
+<p>📱 {shop?.mobile}</p>
+
+{shop?.qrCode && (
+  <img
+    src={shop.qrCode}
+    width="180"
+    alt="QR Code"
+  />
+)}
 
       <div style={{ marginBottom: "20px" }}>
   <Link to="/settings">
