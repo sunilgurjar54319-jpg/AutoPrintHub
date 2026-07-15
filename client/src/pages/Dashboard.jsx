@@ -12,10 +12,12 @@ const shop = JSON.parse(
 );
 
 useEffect(() => {
+
   if (!shop) {
     navigate("/login");
   }
-}, []);
+
+}, [shop, navigate]);
 
   const [stats, setStats] = useState({
     totalOrders: 0,
