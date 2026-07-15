@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+const API = "https://autoprint-hub-server.onrender.com/api";
+
 function ShopPrint() {
 
   const { shopId } = useParams();
 
   const [shop, setShop] = useState(null);
-
   const [rates, setRates] = useState(null);
 
   const [file, setFile] = useState(null);
@@ -26,539 +27,386 @@ function ShopPrint() {
 
   const [orderStatus, setOrderStatus] = useState("");
 
-
-  
   useEffect(() => {
 
-  getShop();
-  getRates();
+    loadShop();
+    loadRates();
 
-}, []);
-
-useEffect(() => {
-
-  if (rates) {
-    calculatePrice();
-  }
-
-}, [rates, printType, copies]);
-
+  }, []);
 
   useEffect(() => {
 
-  if (rates) {
     calculatePrice();
-  }
 
-}, [rates, printType, copies]);
+  }, [rates, printType, copies]);
 
-
-  const getShop = async () => {
+  async function loadShop() {
 
     try {
 
       const res = await axios.get(
-        `https://autoprint-hub-server.onrender.com/api/shops/${shopId}`
+        `${API}/shops/${shopId}`
       );
 
       setShop(res.data.shop);
 
-    } catch(error) {
+    } catch (err) {
 
-      console.log(error);
+      console.log(err);
 
       setMessage("Shop Load Failed");
 
     }
 
-  };
+  }
 
-
-  const getRates = async () => {
+  async function loadRates() {
 
     try {
 
       const res = await axios.get(
-        `https://autoprint-hub-server.onrender.com/api/shops/settings/${shopId}`
+        `${API}/shops/settings/${shopId}`
       );
 
       setRates(res.data.settings);
-      
-      setRates(res.data.settings);
 
-console.log("SETTINGS DATA:", res.data.settings);
-    } catch(error) {
+    } catch (err) {
 
-      console.log(error);
+      console.log(err);
 
     }
 
-  };
+  }
 
-
-  const calculatePrice = () => {
+  function calculatePrice() {
 
     if (!rates) return;
-    
-    console.log("RATE DATA", rates);
 
     let rate = 0;
 
-
-    switch(printType) {
+    switch (printType) {
 
       case "bwSingle":
         rate = Number(rates.bwSingle || 0);
         break;
 
-
       case "bwDouble":
         rate = Number(rates.bwDouble || 0);
         break;
-
 
       case "colorSingle":
         rate = Number(rates.colorSingle || 0);
         break;
 
-
       case "colorDouble":
         rate = Number(rates.colorDouble || 0);
         break;
-
 
       default:
         rate = 0;
 
     }
 
-
-    setPrice(
-      rate * Number(copies)
-    );
-
-  };
-const uploadFile = async () => {
-
-  if (!file) {
-
-    setMessage("Please select file");
-    return;
+    setPrice(rate * Number(copies));
 
   }
+  async function uploadFile() {
 
+    if (!file) {
 
-  try {
+      setMessage("Please select a PDF file");
+      return;
 
-    const formData = new FormData();
+    }
 
-    formData.append("file", file);
-    formData.append("shopId", shopId);
+    try {
 
+      const formData = new FormData();
 
-    const res = await axios.post(
+      formData.append("file", file);
+      formData.append("shopId", shopId);
 
-      "https://autoprint-hub-server.onrender.com/api/upload",
+      const res = await axios.post(
 
-      formData,
+        `${API}/upload`,
 
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
+        formData,
+
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         }
-      }
 
-    );
+      );
 
+      setUploadedFileId(res.data.fileId);
 
-    setUploadedFileId(res.data.fileId);
+      setMessage("✅ File Uploaded Successfully");
 
-    setMessage("Upload Success");
+    } catch (err) {
 
+      console.log(err);
 
-  } catch(error) {
+      setMessage(
+        err.response?.data?.message || "Upload Failed"
+      );
 
-    console.log(error);
-
-    setMessage(
-      error.response?.data?.message || error.message
-    );
-
-  }
-
-};
-
-
-
-const createOrder = async () => {
-
-
-  if (!uploadedFileId) {
-
-    setMessage("Please upload file first");
-    return;
+    }
 
   }
 
 
-  try {
+  async function createOrder() {
 
+    if (!uploadedFileId) {
 
-    const res = await axios.post(
+      setMessage("Upload file first");
+      return;
 
-      "https://autoprint-hub-server.onrender.com/api/orders",
+    }
 
-      {
+    try {
 
-        shopId,
+      const res = await axios.post(
 
-        fileId: uploadedFileId,
+        `${API}/orders`,
 
-        fileName: file.name,
+        {
 
-        printType,
+          shopId,
 
-        copies: Number(copies),
+          fileId: uploadedFileId,
 
-        totalPrice: Number(price)
+          fileName: file.name,
 
-      }
+          printType,
 
-    );
+          copies: Number(copies),
 
+          totalPrice: Number(price)
 
-    setOrderId(res.data.order.$id);
+        }
 
-    setMessage("Order Created Successfully");
+      );
 
+      setOrderId(res.data.order.$id);
 
-  } catch(error) {
+      setMessage("✅ Order Created");
 
+    } catch (err) {
 
-    console.log(error);
+      console.log(err);
 
-    setMessage(
-      error.response?.data?.message || error.message
-    );
+      setMessage(
+        err.response?.data?.message || "Order Failed"
+      );
 
+    }
 
   }
 
-};
 
+  async function startPayment() {
 
+    if (!orderId) {
 
-const startPayment = async () => {
+      setMessage("Create order first");
+      return;
 
+    }
 
-  try {
+    try {
 
+      const res = await axios.post(
 
-    const res = await axios.post(
+        `${API}/payment/create`,
 
-      "https://autoprint-hub-server.onrender.com/api/payment/create",
+        {
 
-      {
+          orderId,
 
-        orderId,
+          amount: Number(price)
 
-        amount: Number(price)
+        }
 
-      }
+      );
 
-    );
+      const razorOrder = res.data.razorpayOrder;
 
+      const options = {
 
-    const order = res.data.razorpayOrder;
+        key: "rzp_test_TBv0I8JsoAY5JU",
 
+        amount: razorOrder.amount,
 
-    const options = {
+        currency: razorOrder.currency,
 
-      key: "rzp_test_TBv0I8JsoAY5JU",
+        name: "AutoPrint Hub",
 
-      amount: order.amount,
+        description: "Document Printing",
 
-      currency: order.currency,
+        order_id: razorOrder.id,
 
-      name: "AutoPrint Hub",
+        handler: async function (response) {
 
-      description: "Printing Payment",
+          const verify = await axios.post(
 
-      order_id: order.id,
+            `${API}/payment/verify`,
 
+            {
 
-      handler: async function(response){
+              orderId,
 
+              razorpay_order_id:
+                response.razorpay_order_id,
 
-        const verify = await axios.post(
+              razorpay_payment_id:
+                response.razorpay_payment_id,
 
-          "https://autoprint-hub-server.onrender.com/api/payment/verify",
+              razorpay_signature:
+                response.razorpay_signature
 
-          {
+            }
 
-            orderId,
+          );
 
-            razorpay_order_id:
-            response.razorpay_order_id,
+          if (verify.data.success) {
 
-            razorpay_payment_id:
-            response.razorpay_payment_id,
+            setOrderStatus("✅ Payment Successful");
 
-            razorpay_signature:
-            response.razorpay_signature
+            setMessage(
+              "Order Sent For Printing"
+            );
 
           }
 
-        );
-
-
-        if(verify.data.success){
-
-          setOrderStatus(
-            "Payment Completed ✅"
-          );
-
         }
 
+      };
 
-      }
+      const razor = new window.Razorpay(options);
 
-    };
+      razor.open();
 
+    } catch (err) {
 
-    const razor = new window.Razorpay(options);
+      console.log(err);
 
-    razor.open();
+      setMessage("Payment Failed");
 
-
-  } catch(error) {
-
-    console.log(error);
-
-    setMessage("Payment Failed");
+    }
 
   }
-
-};
-if (!shop) {
+  if (!shop) {
+    return (
+      <div style={{ padding: "30px", textAlign: "center" }}>
+        <h2>Loading Shop...</h2>
+      </div>
+    );
+  }
 
   return (
-    <h2 style={{padding:"30px"}}>
-      Loading Shop...
-    </h2>
+    <div
+      style={{
+        maxWidth: "650px",
+        margin: "30px auto",
+        padding: "20px",
+        border: "1px solid #ddd",
+        borderRadius: "10px",
+        background: "#fff"
+      }}
+    >
+      <h1>🖨️ {shop.shopName}</h1>
+
+      <p><b>Owner:</b> {shop.ownerName}</p>
+      <p><b>Address:</b> {shop.address}</p>
+
+      <hr />
+
+      <h3>📄 Upload Document</h3>
+
+      <input
+        type="file"
+        accept=".pdf,image/*"
+        onChange={(e) => setFile(e.target.files[0])}
+      />
+
+      <br /><br />
+
+      <button onClick={uploadFile}>
+        Upload File
+      </button>
+
+      <hr />
+
+      <h3>⚙️ Print Options</h3>
+
+      <select
+        value={printType}
+        onChange={(e) => setPrintType(e.target.value)}
+      >
+        <option value="bwSingle">B/W Single Side</option>
+        <option value="bwDouble">B/W Double Side</option>
+        <option value="colorSingle">Color Single Side</option>
+        <option value="colorDouble">Color Double Side</option>
+      </select>
+
+      <br /><br />
+
+      <input
+        type="number"
+        min="1"
+        value={copies}
+        onChange={(e) => setCopies(e.target.value)}
+      />
+
+      <h2>💰 Total Price : ₹{price}</h2>
+
+      <button
+        onClick={createOrder}
+        disabled={!uploadedFileId}
+      >
+        Create Order
+      </button>
+
+      <br /><br />
+
+      <button
+        onClick={startPayment}
+        disabled={!orderId}
+      >
+        💳 Pay Now
+      </button>
+
+      <br /><br />
+
+      {message && (
+        <div
+          style={{
+            padding: "10px",
+            background: "#eef",
+            borderRadius: "5px"
+          }}
+        >
+          {message}
+        </div>
+      )}
+
+      {orderStatus && (
+        <div
+          style={{
+            marginTop: "15px",
+            padding: "10px",
+            background: "#d4edda",
+            borderRadius: "5px"
+          }}
+        >
+          {orderStatus}
+        </div>
+      )}
+    </div>
   );
-
-}
-
-
-return (
-
-<div
-style={{
-  padding:"30px",
-  maxWidth:"600px",
-  margin:"auto"
-}}
->
-
-
-<h1>🖨️ AutoPrint Hub</h1>
-
-<hr/>
-
-
-<h2>{shop.shopName}</h2>
-
-<h2>
-Total Price : ₹{price}
-</h2>
-
-<p>
-<b>Owner:</b> {shop.ownerName}
-</p>
-
-<p>
-<b>Address:</b> {shop.address}
-</p>
-
-<p>
-<b>Printer:</b> {shop.printerName}
-</p>
-
-
-<hr/>
-
-
-<h3>Select Print Type</h3>
-
-
-<select
-
-value={printType}
-
-onChange={(e)=>
-setPrintType(e.target.value)
-}
-
->
-
-
-<option value="bwSingle">
-B/W Single
-</option>
-
-
-<option value="bwDouble">
-B/W Double
-</option>
-
-
-<option value="colorSingle">
-Color Single
-</option>
-
-
-<option value="colorDouble">
-Color Double
-</option>
-
-
-</select>
-
-
-
-<br/><br/>
-
-
-<h3>Copies</h3>
-  Calculate Price
-
-<input
-
-type="number"
-
-min="1"
-
-value={copies}
-
-onChange={(e)=>
-setCopies(e.target.value)
-}
-
-/>
-
-
-
-<h2>
-Total Price : ₹{price}
-</h2>
-
-
-
-<hr/>
-
-
-<h3>Select File</h3>
-
-
-<input
-
-type="file"
-
-onChange={(e)=>
-setFile(e.target.files[0])
-}
-
-/>
-
-
-<br/><br/>
-
-
-<button onClick={uploadFile}>
-Upload File
-</button>
-
-
-<br/><br/>
-
-
-<button
-
-onClick={createOrder}
-
-disabled={!uploadedFileId || price <= 0}
-
->
-
-Create Order
-
-</button>
-
-
-
-<button
-
-onClick={startPayment}
-
-disabled={!orderId}
-
->
-
-Pay Now
-
-</button>
-
-
-
-{orderStatus && (
-
-<div
-style={{
-marginTop:20,
-padding:12,
-background:"#e8f5e9",
-borderRadius:8
-}}
->
-
-<b>Status:</b> {orderStatus}
-
-</div>
-
-)}
-
-
-
-<p>
-{message}
-</p>
-
-
-
-{uploadedFileId && (
-
-<p>
-<b>File ID:</b> {uploadedFileId}
-</p>
-
-)}
-
-
-
-{orderId && (
-
-<p>
-<b>Order ID:</b> {orderId}
-</p>
-
-)}
-
-
-</div>
-
-);
-
 }
 
 export default ShopPrint;
