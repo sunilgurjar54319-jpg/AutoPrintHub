@@ -6,7 +6,10 @@ import RegisterShop from "./pages/RegisterShop";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
-
+<Route
+  path="*"
+  element={<h1 style={{padding:"50px"}}>AutoPrintHub Running ✅</h1>}
+/>
 
 function App() {
 
