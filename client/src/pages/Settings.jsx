@@ -161,7 +161,8 @@ function Settings() {
       <br/><br/>
 
 
-      <h3>Merchant UPI ID</h3>
+      ...
+
 
 
       <input
