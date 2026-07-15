@@ -3,12 +3,20 @@ import api from "../services/api";
 function Settings() {
 const SHOP_ID = "SHOP1783907097192";
 
-const [form, setForm] = useState({
   bwSingle: "",
   bwDouble: "",
   colorSingle: "",
   colorDouble: "",
   upiId: ""
+});const [form, setForm] = useState({
+  bwSingle: "",
+  bwDouble: "",
+  colorSingle: "",
+  colorDouble: "",
+  upiId: "",
+  receiverMode: "RAZORPAY",
+  paytmMerchantUpi: "",
+  paytmMid: ""
 });
 
 const loadSettings = async () => {
@@ -18,13 +26,26 @@ const loadSettings = async () => {
       `/shops/settings/${SHOP_ID}`
     );
 
-    setForm({
       bwSingle: res.data.settings.bwSingle || "",
-      bwDouble: res.data.settings.bwDouble || "",
-      colorSingle: res.data.settings.colorSingle || "",
-      colorDouble: res.data.settings.colorDouble || "",
-      upiId: res.data.settings.upiId || ""
-    });
+  bwDouble: res.data.settings.bwDouble || "",
+  colorSingle: res.data.settings.colorSingle || "",
+  colorDouble: res.data.settings.colorDouble || "",
+  upiId: res.data.settings.upiId || ""
+});setForm({
+  bwSingle: res.data.settings.bwSingle || "",
+  bwDouble: res.data.settings.bwDouble || "",
+  colorSingle: res.data.settings.colorSingle || "",
+  colorDouble: res.data.settings.colorDouble || "",
+  upiId: res.data.settings.upiId || "",
+
+  receiverMode: res.data.settings.receiverMode || "RAZORPAY",
+
+  paytmMerchantUpi:
+    res.data.settings.paytmMerchantUpi || "",
+
+  paytmMid:
+    res.data.settings.paytmMid || ""
+});
 
   } catch (error) {
     console.log(error);
@@ -108,7 +129,71 @@ return (
 />
       <br /><br />
 
-      <h3>Merchant UPI ID</h3>
+      
+<input
+  value={form.upiId}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      upiId: e.target.value
+    })
+  }
+  placeholder="Enter UPI ID"
+/>
+<br /><br /><h3>Payment Receiver</h3>
+
+<select
+  value={form.receiverMode}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      receiverMode: e.target.value
+    })
+  }
+>
+  <option value="RAZORPAY">
+    Razorpay
+  </option>
+
+  <option value="PAYTM">
+    Paytm Business
+  </option>
+
+</select>
+
+<br /><br />
+
+
+<h3>Paytm Merchant UPI</h3>
+
+<input
+  value={form.paytmMerchantUpi}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      paytmMerchantUpi: e.target.value
+    })
+  }
+  placeholder="shopname@paytm"
+/>
+
+<br /><br />
+
+
+<h3>Paytm MID</h3>
+
+<input
+  value={form.paytmMid}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      paytmMid: e.target.value
+    })
+  }
+  placeholder="Enter Paytm MID"
+/>
+
+<br /><br /><h3>Merchant UPI ID</h3>
 
       <input
   value={form.upiId}

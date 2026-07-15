@@ -9,27 +9,50 @@ exports.saveSettings = async (req, res) => {
       bwDouble,
       colorSingle,
       colorDouble,
-      upiId
+      upiId,
+      receiverMode,
+      paytmMerchantUpi,
+      paytmMid
     } = req.body;
 
+
     res.json({
+
       success: true,
+
       message: "Settings received",
+
       data: {
+
         shopId,
+
         bwSingle,
         bwDouble,
+
         colorSingle,
         colorDouble,
-        upiId
+
+        upiId,
+
+        receiverMode,
+
+        paytmMerchantUpi,
+
+        paytmMid
+
       }
+
     });
+
 
   } catch (error) {
 
     res.status(500).json({
-      success: false,
-      message: error.message
+
+      success:false,
+
+      message:error.message
+
     });
 
   }
