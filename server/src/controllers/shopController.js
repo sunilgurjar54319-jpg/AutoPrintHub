@@ -15,8 +15,8 @@ exports.registerShop = async (req, res) => {
 
     const shopId = "SHOP" + Date.now();
 
-    const shopUrl =
-      `${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;
+    `${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;const shopUrl =
+`${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;
 
     const qrCode = await QRCode.toDataURL(shopUrl);
 
