@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import ShopPrint from "./pages/ShopPrint";
@@ -10,13 +10,21 @@ import Settings from "./pages/Settings";
 function App() {
   return (
     <Routes>
-  <Route path="/" element={<Home />} />
-  <Route path="/shop/:shopId" element={<ShopPrint />} />
-  <Route path="/register-shop" element={<RegisterShop />} />
-  <Route path="/login" element={<Login />} />
-  <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/settings" element={<Settings />} />
-</Routes>
+
+      {/* Shop Owner */}
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register-shop" element={<RegisterShop />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/settings" element={<Settings />} />
+
+      {/* Customer */}
+      <Route path="/shop/:shopId" element={<ShopPrint />} />
+
+      {/* Unknown URL */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+
+    </Routes>
   );
 }
 
