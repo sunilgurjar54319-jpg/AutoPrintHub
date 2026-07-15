@@ -1,4 +1,14 @@
-const { databases } = require("../config/appwrite");
+const   shopId,
+  shopName,
+  ownerName,
+  mobile,
+  address,
+  printerName,
+  printerType,
+  qrCode,
+  status:"ACTIVE"
+  agentToken: ID.unique(),
+}{ databases } = require("../config/appwrite");
 const { ID, Query } = require("node-appwrite");
 const QRCode = require("qrcode");
 
