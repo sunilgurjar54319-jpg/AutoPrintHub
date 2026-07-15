@@ -40,9 +40,14 @@ function App() {
       />
 
       <Route
-        path="/settings"
-        element={<Settings />}
-      />
+  path="/settings"
+  element={<Settings />}
+/>
+
+<Route
+  path="*"
+  element={<Home />}
+/>
 
     </Routes>
 

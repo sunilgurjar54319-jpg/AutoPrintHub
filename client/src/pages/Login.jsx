@@ -30,7 +30,7 @@ function Login() {
 
       alert("Login Successful");
 
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
 
     } catch (error) {
 
