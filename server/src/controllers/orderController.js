@@ -1,8 +1,9 @@
 const { databases } = require("../config/appwrite");
-const { ID } = require("node-appwrite");
+const { ID, Query } = require("node-appwrite");
 
 
-// Create Order
+// ================= CREATE ORDER =================
+
 exports.createOrder = async (req, res) => {
 
   try {
@@ -32,9 +33,9 @@ exports.createOrder = async (req, res) => {
         printType,
         copies,
         totalPrice,
-        createdAt: new Date().toISOString()status: "PENDING",
-printStatus: "WAITING",
-createdAt: new Date().toISOString()
+        status: "PENDING",
+        printStatus: "WAITING",
+        createdAt: new Date().toISOString()
       }
 
     );
@@ -42,9 +43,7 @@ createdAt: new Date().toISOString()
 
     res.json({
 
-      success:true,
-
-      message:"Order Created Successfully",
+      success: true,
 
       order
 
@@ -53,11 +52,7 @@ createdAt: new Date().toISOString()
 
   } catch(error) {
 
-
     console.log(error);
-console.log(error.response);
-console.log(error.stack);
-
 
     res.status(500).json({
 
@@ -67,53 +62,60 @@ console.log(error.stack);
 
     });
 
-
   }
 
 };
 
 
 
+// ================= GET ALL ORDERS =================
 
-// Get All Orders
-exports.getOrders = async (req, res) => {
-  try {
+exports.getOrders = async (req,res)=>{
 
-    const { shopId } = req.query;
+  try{
 
-    const { Query } = require("node-appwrite");
+    const result = await databases.listDocuments(
 
-    const orders = await databases.listDocuments(
       process.env.APPWRITE_DATABASE_ID,
-      process.env.APPWRITE_ORDER_COLLECTION_ID,
-      [
-        Query.equal("shopId", shopId)
-      ]
+
+      process.env.APPWRITE_ORDER_COLLECTION_ID
+
     );
 
+
     res.json({
-      success: true,
-      orders: orders.documents
+
+      success:true,
+
+      orders:result.documents
+
     });
 
-  } catch (error) {
+
+  }catch(error){
 
     res.status(500).json({
-      success: false,
-      message: error.message
+
+      success:false,
+
+      message:error.message
+
     });
 
   }
+
 };
 
 
 
-// Get Single Order
-exports.getOrderById = async (req,res)=>{
+// ================= GET SINGLE ORDER =================
 
-  try {
+exports.getOrderById = async(req,res)=>{
 
-    const order = await databases.getDocument(
+  try{
+
+    const order =
+    await databases.getDocument(
 
       process.env.APPWRITE_DATABASE_ID,
 
@@ -146,72 +148,99 @@ exports.getOrderById = async (req,res)=>{
   }
 
 };
-exports.updateOrderStatus = async (req, res) => {
-  try {
 
-    const { id } = req.params;
-    const { status } = req.body;
 
-    const order = await databases.updateDocument(
+
+// ================= UPDATE ORDER STATUS =================
+
+exports.updateOrderStatus = async(req,res)=>{
+
+  try{
+
+    const updated =
+    await databases.updateDocument(
+
       process.env.APPWRITE_DATABASE_ID,
+
       process.env.APPWRITE_ORDER_COLLECTION_ID,
-      id,
+
+      req.params.id,
+
       {
-        status
+
+        status:req.body.status,
+
+        printStatus:req.body.printStatus || "WAITING"
+
       }
+
     );
 
+
     res.json({
-      success: true,
-      message: "Status updated",
-      order
+
+      success:true,
+
+      order:updated
+
     });
 
-  } catch (error) {
 
-    console.log(error);
+  }catch(error){
 
     res.status(500).json({
-      success: false,
-      message: error.message
+
+      success:false,
+
+      message:error.message
+
     });
 
   }
-};
-// Get Print Queue For Shop
-exports.getPrintQueue = async (req, res) => {
 
-  try {
+};
+
+
+
+// ================= PRINT QUEUE =================
+
+exports.getPrintQueue = async(req,res)=>{
+
+  try{
 
     const { shopId } = req.params;
 
-    const orders = await databases.listDocuments(
+
+    const result =
+    await databases.listDocuments(
 
       process.env.APPWRITE_DATABASE_ID,
 
-      process.env.APPWRITE_ORDER_COLLECTION_ID
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
 
-    );
+      [
 
+        Query.equal("shopId", shopId),
 
-    const queue = orders.documents.filter(
-      order =>
-        order.shopId === shopId &&
-        order.status === "PAID" &&
-        order.printStatus === "WAITING"
+        Query.equal("status","PAID"),
+
+        Query.equal("printStatus","WAITING")
+
+      ]
+
     );
 
 
     res.json({
 
-      success: true,
+      success:true,
 
-      orders: queue
+      orders:result.documents
 
     });
 
 
-  } catch(error) {
+  }catch(error){
 
     console.log(error);
 
