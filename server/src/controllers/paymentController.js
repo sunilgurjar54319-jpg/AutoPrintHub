@@ -14,7 +14,15 @@ exports.createOrder = async (req, res) => {
       amount
     } = req.body;
 
-    const razorpayOrder =
+      await razorpay.orders.create({
+
+    amount: Number(amount) * 100,
+
+    currency: "INR",
+
+    receipt: orderId
+
+  });const razorpayOrder =
       await razorpay.orders.create({
 
         amount: Number(amount) * 100,
@@ -24,6 +32,16 @@ exports.createOrder = async (req, res) => {
         receipt: orderId
 
       });
+
+await databases.updateDocument(
+  process.env.APPWRITE_DATABASE_ID,
+  process.env.APPWRITE_ORDER_COLLECTION_ID,
+  orderId,
+  {
+    razorpayOrderId: razorpayOrder.id,
+    status: "PAYMENT_PENDING"
+  }
+);
 
     res.json({
 

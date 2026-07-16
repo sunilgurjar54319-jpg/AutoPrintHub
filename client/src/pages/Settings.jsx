@@ -20,6 +20,8 @@ const SHOP_ID = shop?.shopId;
 
       const settings = res.data.settings;
 
+      console.log("SETTINGS FROM API:", settings);
+
       setForm({
         bwSingle: settings.bwSingle || "",
         bwDouble: settings.bwDouble || "",
