@@ -65,11 +65,10 @@ useEffect(() => {
   };
 
 
-    }, []);useEffect(() => {
-  if (shop) {
+      if (shop) {
     fetchOrders();
   }
-}, []);useEffect(() => {
+useEffect(() => {
   if (shop) {
     fetchOrders();
   }
