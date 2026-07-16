@@ -1,3 +1,4 @@
+const { getShopUrl } = require("../utils/qrHelper");
 const { databases } = require("../config/appwrite");
 const { ID, Query } = require("node-appwrite");
 const QRCode = require("qrcode");
@@ -15,8 +16,10 @@ exports.registerShop = async (req, res) => {
 
     const shopId = "SHOP" + Date.now();
 
-const shopUrl =
 `${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;
+
+const qrCode =
+await QRCode.toDataURL(shopUrl);const shopUrl = getShopUrl(shopId);
 
 const qrCode = await QRCode.toDataURL(shopUrl);
 
@@ -38,10 +41,13 @@ const qrCode = await QRCode.toDataURL(shopUrl);
       }
     );
 
-    res.json({
       success: true,
-      shop
-    });
+  shop
+});res.json({
+  success: true,
+  shop,
+  shopUrl
+});
 
   } catch (error) {
 
