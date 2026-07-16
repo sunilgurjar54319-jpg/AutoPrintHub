@@ -178,3 +178,51 @@ exports.updateOrderStatus = async (req, res) => {
 
   }
 };
+// Get Print Queue For Shop
+exports.getPrintQueue = async (req, res) => {
+
+  try {
+
+    const { shopId } = req.params;
+
+    const orders = await databases.listDocuments(
+
+      process.env.APPWRITE_DATABASE_ID,
+
+      process.env.APPWRITE_ORDER_COLLECTION_ID
+
+    );
+
+
+    const queue = orders.documents.filter(
+      order =>
+        order.shopId === shopId &&
+        order.status === "PAID" &&
+        order.printStatus === "WAITING"
+    );
+
+
+    res.json({
+
+      success: true,
+
+      orders: queue
+
+    });
+
+
+  } catch(error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      success:false,
+
+      message:error.message
+
+    });
+
+  }
+
+};

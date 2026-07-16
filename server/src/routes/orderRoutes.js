@@ -5,7 +5,8 @@ const {
   createOrder,
   getOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  getPrintQueue
 } = require("../controllers/orderController");
 
 
@@ -19,6 +20,8 @@ router.get("/", getOrders);
 
 // Get Single Order
 router.get("/:id", getOrderById);
+
+router.get("/queue/:shopId", getPrintQueue);
 
 router.put("/:id/status", updateOrderStatus);
 
