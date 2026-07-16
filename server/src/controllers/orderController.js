@@ -76,41 +76,34 @@ console.log(error.stack);
 
 // Get All Orders
 exports.getOrders = async (req, res) => {
-
   try {
 
+    const { shopId } = req.query;
+
+    const { Query } = require("node-appwrite");
+
     const orders = await databases.listDocuments(
-
       process.env.APPWRITE_DATABASE_ID,
-
-      process.env.APPWRITE_ORDER_COLLECTION_ID
-
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
+      [
+        Query.equal("shopId", shopId)
+      ]
     );
 
-
     res.json({
-
-      success:true,
-
-      orders:orders.documents
-
+      success: true,
+      orders: orders.documents
     });
 
-
-  } catch(error){
+  } catch (error) {
 
     res.status(500).json({
-
-      success:false,
-
-      message:error.message
-
+      success: false,
+      message: error.message
     });
 
   }
-
 };
-
 
 
 

@@ -31,7 +31,9 @@ useEffect(() => {
 
   const fetchOrders = async () => {
     try {
-      const res = await api.get("/orders");
+      const res = await api.get(
+  `/orders?shopId=${shop.shopId}`
+);
 
       const orderList = res.data.orders || [];
 
@@ -63,9 +65,12 @@ useEffect(() => {
   };
 
 
-  useEffect(() => {
     fetchOrders();
-  }, []);
+}, []);useEffect(() => {
+  if (shop) {
+    fetchOrders();
+  }
+}, []);
 
 
   const startPrinting = async (orderId) => {
