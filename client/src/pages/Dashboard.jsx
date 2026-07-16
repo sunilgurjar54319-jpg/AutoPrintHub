@@ -65,12 +65,15 @@ useEffect(() => {
   };
 
 
+    }, []);useEffect(() => {
+  if (shop) {
     fetchOrders();
+  }
 }, []);useEffect(() => {
   if (shop) {
     fetchOrders();
   }
-}, []);
+}, [shop]);
 
 
   const startPrinting = async (orderId) => {
