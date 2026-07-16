@@ -4,7 +4,8 @@ const razorpay = require("../config/razorpay");
 const { databases } = require("../config/appwrite");
 
 
-// Create Razorpay Order
+// ================= CREATE RAZORPAY ORDER =================
+
 exports.createOrder = async (req, res) => {
 
   try {
@@ -14,34 +15,17 @@ exports.createOrder = async (req, res) => {
       amount
     } = req.body;
 
-      await razorpay.orders.create({
 
-    amount: Number(amount) * 100,
+    const razorpayOrder = await razorpay.orders.create({
 
-    currency: "INR",
+      amount: Number(amount) * 100,
 
-    receipt: orderId
+      currency: "INR",
 
-  });const razorpayOrder =
-      await razorpay.orders.create({
+      receipt: orderId
 
-        amount: Number(amount) * 100,
+    });
 
-        currency: "INR",
-
-        receipt: orderId
-
-      });
-
-await databases.updateDocument(
-  process.env.APPWRITE_DATABASE_ID,
-  process.env.APPWRITE_ORDER_COLLECTION_ID,
-  orderId,
-  {
-    razorpayOrderId: razorpayOrder.id,
-    status: "PAYMENT_PENDING"
-  }
-);
 
     res.json({
 
@@ -51,25 +35,31 @@ await databases.updateDocument(
 
     });
 
-  } catch (error) {
+
+  } catch(error) {
 
     console.log(error);
 
     res.status(500).json({
 
-      success: false,
+      success:false,
 
-      message: error.message
+      message:error.message
 
     });
 
   }
 
 };
-// Verify Razorpay Payment
-exports.verifyPayment = async (req, res) => {
+
+
+
+// ================= VERIFY PAYMENT =================
+
+exports.verifyPayment = async (req,res)=>{
 
   try {
+
 
     const {
       orderId,
@@ -79,10 +69,12 @@ exports.verifyPayment = async (req, res) => {
     } = req.body;
 
 
+
     const body =
       razorpay_order_id +
       "|" +
       razorpay_payment_id;
+
 
 
     const expectedSignature =
@@ -95,74 +87,87 @@ exports.verifyPayment = async (req, res) => {
       .digest("hex");
 
 
-    if (expectedSignature !== razorpay_signature) {
+
+    if(expectedSignature !== razorpay_signature){
 
       return res.status(400).json({
 
-        success: false,
+        success:false,
 
-        message: "Invalid Signature"
+        message:"Invalid Signature"
 
       });
 
     }
 
 
+
     const order =
-  await databases.getDocument(
+    await databases.getDocument(
 
-    process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_DATABASE_ID,
 
-    process.env.APPWRITE_ORDER_COLLECTION_ID,
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
 
-    orderId
+      orderId
 
-  );
+    );
+
+
+
     const updatedOrder =
-      await databases.updateDocument(
+    await databases.updateDocument(
 
-        process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_DATABASE_ID,
 
-        process.env.APPWRITE_ORDER_COLLECTION_ID,
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
 
-        order.$id,
+      order.$id,
 
-        {
+      {
 
-          status: "PAID",
+        status:"PAID",
 
-          paymentId: razorpay_payment_id,
+        printStatus:"WAITING",
 
-          razorpayOrderId: razorpay_order_id,
+        paymentId:razorpay_payment_id,
 
-          paidAt: new Date().toISOString()
+        razorpayOrderId:razorpay_order_id,
 
-        }
+        paidAt:new Date().toISOString()
 
-      );
+      }
+
+    );
 
 
-    return res.json({
 
-      success: true,
+    res.json({
 
-      message: "Payment Verified Successfully",
+      success:true,
 
-      order: updatedOrder
+      message:"Payment Verified Successfully",
+
+      order:updatedOrder
 
     });
 
-  } catch (error) {
+
+
+  } catch(error) {
+
 
     console.log(error);
 
+
     res.status(500).json({
 
-      success: false,
+      success:false,
 
-      message: error.message
+      message:error.message
 
     });
+
 
   }
 
