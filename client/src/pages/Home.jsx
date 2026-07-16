@@ -1,41 +1,45 @@
-import { useState } from "react";
 import Header from "../components/Header";
-import UploadForm from "../components/UploadForm";
-import PrintOptions from "../components/PrintOptions";
-import PriceCard from "../components/PriceCard";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const [pages, setPages] = useState(0);
-  const [copies, setCopies] = useState(1);
-  const [color, setColor] = useState("bw");
-
-  const rate = color === "bw" ? 2 : 10;
-  const total = pages * copies * rate;
-
   return (
     <div>
       <Header />
 
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "80px"
+        }}
+      >
+        <h1>🖨️ AutoPrintHub</h1>
 
-     <UploadForm 
-  setPages={setPages}
-  pages={pages}
-/>
+        <p>Upload • Pay • Auto Print</p>
 
-      <PrintOptions
-        color={color}
-        setColor={setColor}
-        copies={copies}
-        setCopies={setCopies}
-      />
+        <div style={{ marginTop: "30px" }}>
+          <Link to="/register">
+            <button
+              style={{
+                padding: "12px 25px",
+                margin: "10px"
+              }}
+            >
+              🏪 Shop Register
+            </button>
+          </Link>
 
-      <PriceCard
-  pages={pages}
-  copies={copies}
-  color={color}
-  total={total}
-/>
-
+          <Link to="/login">
+            <button
+              style={{
+                padding: "12px 25px",
+                margin: "10px"
+              }}
+            >
+              🔐 Shop Login
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
