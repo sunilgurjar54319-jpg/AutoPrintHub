@@ -32,8 +32,9 @@ exports.createOrder = async (req, res) => {
         printType,
         copies,
         totalPrice,
-        status: "PENDING",
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString()status: "PENDING",
+printStatus: "WAITING",
+createdAt: new Date().toISOString()
       }
 
     );
