@@ -1,7 +1,9 @@
-const { getShopUrl } = require("../utils/qrHelper");
 const { databases } = require("../config/appwrite");
 const { ID, Query } = require("node-appwrite");
 const QRCode = require("qrcode");
+const { getShopUrl } = require("../utils/qrHelper");
+
+// ================= REGISTER SHOP =================
 
 exports.registerShop = async (req, res) => {
   try {
@@ -16,12 +18,9 @@ exports.registerShop = async (req, res) => {
 
     const shopId = "SHOP" + Date.now();
 
-`${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;
+    const shopUrl = getShopUrl(shopId);
 
-const qrCode =
-await QRCode.toDataURL(shopUrl);const shopUrl = getShopUrl(shopId);
-
-const qrCode = await QRCode.toDataURL(shopUrl);
+    const qrCode = await QRCode.toDataURL(shopUrl);
 
     const shop = await databases.createDocument(
       process.env.APPWRITE_DATABASE_ID,
@@ -36,20 +35,19 @@ const qrCode = await QRCode.toDataURL(shopUrl);
         printerName,
         printerType,
         qrCode,
-        status: "ACTIVE",
-        agentToken: ID.unique()
+        status: "ACTIVE"
       }
     );
 
+    res.json({
       success: true,
-  shop
-});res.json({
-  success: true,
-  shop,
-  shopUrl
-});
+      shop,
+      shopUrl
+    });
 
   } catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
       success: false,
@@ -58,6 +56,8 @@ const qrCode = await QRCode.toDataURL(shopUrl);
 
   }
 };
+
+// ================= LOGIN =================
 
 exports.loginShop = async (req, res) => {
   try {
@@ -67,7 +67,9 @@ exports.loginShop = async (req, res) => {
     const result = await databases.listDocuments(
       process.env.APPWRITE_DATABASE_ID,
       process.env.APPWRITE_SHOPS_COLLECTION_ID,
-      [Query.equal("mobile", mobile)]
+      [
+        Query.equal("mobile", mobile)
+      ]
     );
 
     if (result.total === 0) {
@@ -91,6 +93,8 @@ exports.loginShop = async (req, res) => {
 
   }
 };
+
+// ================= GET SHOP =================
 
 exports.getShopById = async (req, res) => {
   try {
@@ -100,7 +104,9 @@ exports.getShopById = async (req, res) => {
     const result = await databases.listDocuments(
       process.env.APPWRITE_DATABASE_ID,
       process.env.APPWRITE_SHOPS_COLLECTION_ID,
-      [Query.equal("shopId", shopId)]
+      [
+        Query.equal("shopId", shopId)
+      ]
     );
 
     if (result.total === 0) {
@@ -125,6 +131,8 @@ exports.getShopById = async (req, res) => {
   }
 };
 
+// ================= GET SETTINGS =================
+
 exports.getShopSettings = async (req, res) => {
   try {
 
@@ -133,7 +141,9 @@ exports.getShopSettings = async (req, res) => {
     const result = await databases.listDocuments(
       process.env.APPWRITE_DATABASE_ID,
       process.env.APPWRITE_SHOPS_COLLECTION_ID,
-      [Query.equal("shopId", shopId)]
+      [
+        Query.equal("shopId", shopId)
+      ]
     );
 
     if (result.total === 0) {
@@ -158,6 +168,8 @@ exports.getShopSettings = async (req, res) => {
   }
 };
 
+// ================= UPDATE SETTINGS =================
+
 exports.updateShopSettings = async (req, res) => {
   try {
 
@@ -172,7 +184,9 @@ exports.updateShopSettings = async (req, res) => {
     const result = await databases.listDocuments(
       process.env.APPWRITE_DATABASE_ID,
       process.env.APPWRITE_SHOPS_COLLECTION_ID,
-      [Query.equal("shopId", shopId)]
+      [
+        Query.equal("shopId", shopId)
+      ]
     );
 
     if (result.total === 0) {
@@ -202,6 +216,8 @@ exports.updateShopSettings = async (req, res) => {
     });
 
   } catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
       success: false,
