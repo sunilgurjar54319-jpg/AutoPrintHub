@@ -15,10 +15,10 @@ exports.registerShop = async (req, res) => {
 
     const shopId = "SHOP" + Date.now();
 
-    `${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;const shopUrl =
+const shopUrl =
 `${process.env.PUBLIC_APP_URL}/#/shop/${shopId}`;
 
-    const qrCode = await QRCode.toDataURL(shopUrl);
+const qrCode = await QRCode.toDataURL(shopUrl);
 
     const shop = await databases.createDocument(
       process.env.APPWRITE_DATABASE_ID,
