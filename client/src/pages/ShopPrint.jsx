@@ -70,6 +70,8 @@ function ShopPrint() {
 
       setRates(res.data.settings);
 
+      console.log("SETTINGS:", res.data.settings);
+
     } catch (err) {
 
       console.log(err);

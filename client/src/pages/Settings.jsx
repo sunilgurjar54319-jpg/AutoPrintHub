@@ -3,7 +3,8 @@ import api from "../services/api";
 
 function Settings() {
 
-  const SHOP_ID = localStorage.getItem("shopId");
+  const shop = JSON.parse(localStorage.getItem("shop"));
+const SHOP_ID = shop?.shopId;
 
   const [form, setForm] = useState({
     bwSingle: "",
