@@ -11,6 +11,7 @@ function RegisterShop() {
 
   const [loading, setLoading] = useState(false);
   const [shop, setShop] = useState(null);
+  const [shopUrl, setShopUrl] = useState("");
   const registerShop = async () => {
     try {
       setLoading(true);
@@ -30,6 +31,7 @@ function RegisterShop() {
       alert(JSON.stringify(res.data.shop));
 
 setShop(res.data.shop);
+setShopUrl(res.data.shopUrl);
 
 alert("Shop Registered Successfully");
 
@@ -104,7 +106,7 @@ alert("Shop Registered Successfully");
 
     <input
   readOnly
-  value={`http://localhost:5173/shop/${shop.shopId}`}
+  value={shopUrl}
   style={{ width: "100%" }}
 />
 
