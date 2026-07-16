@@ -70,40 +70,36 @@ exports.createOrder = async (req, res) => {
 
 // ================= GET ALL ORDERS =================
 
-exports.getOrders = async (req,res)=>{
+exports.getOrders = async (req, res) => {
+  try {
 
-  try{
+    const queries = [];
+
+    if (req.query.shopId) {
+      queries.push(
+        Query.equal("shopId", req.query.shopId)
+      );
+    }
 
     const result = await databases.listDocuments(
-
       process.env.APPWRITE_DATABASE_ID,
-
-      process.env.APPWRITE_ORDER_COLLECTION_ID
-
+      process.env.APPWRITE_ORDER_COLLECTION_ID,
+      queries
     );
 
-
     res.json({
-
-      success:true,
-
-      orders:result.documents
-
+      success: true,
+      orders: result.documents
     });
 
-
-  }catch(error){
+  } catch (error) {
 
     res.status(500).json({
-
-      success:false,
-
-      message:error.message
-
+      success: false,
+      message: error.message
     });
 
   }
-
 };
 
 
